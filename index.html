@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f7efe6" />
+  <meta name="theme-color" content="#eaf3f6" />
   <title>宝宝每周食谱规划器</title>
   <style>
     :root {
-      --bg: #fbf7f2;
+      --bg: #f4f8fa;
       --panel: #ffffff;
-      --text: #2f2a26;
-      --muted: #746b64;
-      --line: #eadfd3;
-      --accent: #bd7755;
-      --accent-soft: #f4e3d8;
-      --good: #4f7d65;
-      --danger: #a75050;
-      --shadow: 0 10px 30px rgba(74, 54, 39, 0.08);
+      --text: #263944;
+      --muted: #667b86;
+      --line: #d7e4e9;
+      --accent: #5f8fa3;
+      --accent-strong: #477789;
+      --accent-soft: #e3f0f4;
+      --accent-pale: #f0f7f9;
+      --good: #4f7f73;
+      --danger: #a45563;
+      --shadow: 0 12px 34px rgba(57, 91, 105, 0.09);
     }
 
     * { box-sizing: border-box; }
@@ -67,6 +69,7 @@
 
     .btn:hover { transform: translateY(-1px); border-color: var(--accent); }
     .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn.primary:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
     .btn.soft { background: var(--accent-soft); border-color: transparent; }
     .btn.danger { color: var(--danger); }
     .btn.small { padding: 6px 10px; border-radius: 10px; font-size: 13px; }
@@ -124,6 +127,48 @@
     textarea { min-height: 92px; resize: vertical; }
     .span-2 { grid-column: 1 / -1; }
 
+    .meal-type-fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0;
+      min-width: 0;
+    }
+    .meal-type-fieldset legend {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .meal-type-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .meal-type-option {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 12px;
+      background: white;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .meal-type-option:has(input:checked) {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+    }
+    .meal-type-option input {
+      width: auto;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+    .helper-text {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 8px 0 0;
+    }
+
     .recipe-list {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -135,7 +180,7 @@
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 14px;
-      background: #fffdfb;
+      background: var(--accent-pale);
     }
 
     .recipe-card h3 { margin-bottom: 8px; }
@@ -163,7 +208,7 @@
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 12px;
-      background: #fffdfb;
+      background: var(--accent-pale);
       min-height: 470px;
     }
 
@@ -226,7 +271,7 @@
     <header>
       <div>
         <h1>宝宝每周食谱规划器 🥣</h1>
-        <p class="subtitle">把“今天吃什么”交给规则，不交给厨房骰子。</p>
+        <p class="subtitle">轻松安排一周饮食，把每天的选择题变简单。</p>
       </div>
       <div class="toolbar">
         <button class="btn" id="exportBtn">导出数据</button>
@@ -243,7 +288,7 @@
 
     <section class="view active" id="planner">
       <div class="notice">
-        第一版数据保存在当前浏览器。朋友打开链接后，会拥有自己的独立食谱库。
+        数据保存在当前浏览器中。每位使用者都会拥有自己的独立食谱库和菜单。
       </div>
 
       <div class="panel">
@@ -296,15 +341,16 @@
             食谱名称
             <input id="recipeName" placeholder="番茄牛肉软饭" />
           </label>
-          <label>
-            餐别
-            <select id="mealType">
-              <option value="早餐">早餐</option>
-              <option value="午餐">午餐</option>
-              <option value="晚餐">晚餐</option>
-              <option value="加餐">加餐</option>
-            </select>
-          </label>
+          <fieldset class="meal-type-fieldset">
+            <legend>适用餐别（可多选）</legend>
+            <div class="meal-type-options" id="mealTypeOptions">
+              <label class="meal-type-option"><input type="checkbox" name="mealType" value="早餐" checked />早餐</label>
+              <label class="meal-type-option"><input type="checkbox" name="mealType" value="午餐" />午餐</label>
+              <label class="meal-type-option"><input type="checkbox" name="mealType" value="晚餐" />晚餐</label>
+              <label class="meal-type-option"><input type="checkbox" name="mealType" value="下午茶" />下午茶</label>
+            </div>
+            <p class="helper-text">例如香蕉松饼可以同时用于早餐和下午茶。</p>
+          </fieldset>
           <label>
             主要蛋白质
             <select id="protein">
@@ -352,8 +398,9 @@
         </div>
         <div class="toolbar" style="margin-top:14px">
           <button class="btn primary" id="saveRecipeBtn">保存食谱</button>
-          <button class="btn" id="seedBtn">加入示例食谱</button>
+          <button class="btn" id="seedBtn">导入一组示例食谱</button>
         </div>
+        <p class="helper-text">“示例食谱”是一组用于体验规划功能的常见宝宝餐。只会添加到你自己的浏览器里，也可以随时删除。</p>
       </div>
 
       <div id="recipeList" class="recipe-list"></div>
@@ -375,8 +422,9 @@
 
   <script>
     const DAYS = ["周一","周二","周三","周四","周五","周六","周日"];
-    const MEALS = ["早餐","午餐","晚餐","加餐"];
-    const STORAGE_KEY = "babyMealPlannerV1";
+    const MEALS = ["早餐","午餐","下午茶","晚餐"];
+    const STORAGE_KEY = "babyMealPlannerV2";
+    const LEGACY_STORAGE_KEY = "babyMealPlannerV1";
 
     const state = {
       recipes: [],
@@ -393,14 +441,35 @@
       return crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
     }
 
+    function normalizeRecipe(recipe) {
+      const rawMealTypes = Array.isArray(recipe.mealTypes)
+        ? recipe.mealTypes
+        : [recipe.mealType || "早餐"];
+      const mealTypes = [...new Set(rawMealTypes.map(type => type === "加餐" ? "下午茶" : type))];
+      return { ...recipe, mealTypes };
+    }
+
+    function migrateWeek(week) {
+      const migrated = {};
+      Object.entries(week || {}).forEach(([day, meals]) => {
+        migrated[day] = { ...(meals || {}) };
+        if (migrated[day]["加餐"] && !migrated[day]["下午茶"]) {
+          migrated[day]["下午茶"] = migrated[day]["加餐"];
+        }
+        delete migrated[day]["加餐"];
+      });
+      return migrated;
+    }
+
     function load() {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       if (!raw) return;
       try {
         const parsed = JSON.parse(raw);
-        state.recipes = parsed.recipes || [];
-        state.week = parsed.week || {};
+        state.recipes = (parsed.recipes || []).map(normalizeRecipe);
+        state.week = migrateWeek(parsed.week || {});
         state.settings = { ...state.settings, ...(parsed.settings || {}) };
+        save();
       } catch (err) {
         console.error(err);
       }
@@ -441,7 +510,7 @@
 
     function chooseRecipe(mealType, dayIndex, usedIds, previousProtein) {
       const candidates = state.recipes
-        .filter(r => r.mealType === mealType && recipeAllowed(r, dayIndex))
+        .filter(r => r.mealTypes.includes(mealType) && recipeAllowed(r, dayIndex))
         .sort((a, b) => scoreRecipe(b, usedIds, previousProtein) - scoreRecipe(a, usedIds, previousProtein));
 
       const fresh = candidates.filter(r => !usedIds.includes(r.id));
@@ -455,7 +524,7 @@
         let current = dinnerSlots.filter(s => state.recipes.find(r => r.id === s.recipeId)?.protein === protein).length;
         if (current >= target) return;
 
-        const options = state.recipes.filter(r => r.mealType === "晚餐" && r.protein === protein);
+        const options = state.recipes.filter(r => r.mealTypes.includes("晚餐") && r.protein === protein);
         for (const option of options) {
           if (current >= target) break;
           const slot = dinnerSlots.find(s => !s.locked && state.recipes.find(r => r.id === s.recipeId)?.protein !== protein);
@@ -470,7 +539,7 @@
 
     function generateWeek() {
       if (!state.recipes.length) {
-        alert("请先添加食谱，或点击“加入示例食谱”。");
+        alert("请先添加食谱，或点击“导入一组示例食谱”。");
         return;
       }
 
@@ -579,14 +648,14 @@
       root.innerHTML = "";
 
       if (!state.recipes.length) {
-        root.innerHTML = '<div class="empty" style="grid-column:1/-1">还没有食谱。先加几道，或者加入示例食谱。</div>';
+        root.innerHTML = '<div class="empty" style="grid-column:1/-1">还没有食谱。先添加几道，或者导入一组示例食谱体验一下。</div>';
         return;
       }
 
       state.recipes.forEach(recipe => {
         const card = document.createElement("article");
         card.className = "recipe-card";
-        const chips = [recipe.mealType, recipe.protein, ...recipe.tags].map(x => `<span class="chip">${x}</span>`).join("");
+        const chips = [...recipe.mealTypes, recipe.protein, ...recipe.tags].map(x => `<span class="chip">${x}</span>`).join("");
         card.innerHTML = `
           <h3>${recipe.name}</h3>
           <div class="chips">${chips}</div>
@@ -626,10 +695,16 @@
         return;
       }
 
+      const mealTypes = [...document.querySelectorAll('input[name="mealType"]:checked')].map(input => input.value);
+      if (!mealTypes.length) {
+        alert("请至少选择一个餐别。");
+        return;
+      }
+
       state.recipes.push({
         id: uid(),
         name,
-        mealType: document.querySelector("#mealType").value,
+        mealTypes,
         protein: document.querySelector("#protein").value,
         cookTime: Number(document.querySelector("#cookTime").value || 0),
         ingredients: splitList(document.querySelector("#ingredients").value),
@@ -642,31 +717,34 @@
       ["recipeName","ingredients","allergens","tags","notes"].forEach(id => document.querySelector(`#${id}`).value = "");
       document.querySelector("#cookTime").value = 20;
       document.querySelector("#rating").value = 3;
+      document.querySelectorAll('input[name="mealType"]').forEach((input, index) => input.checked = index === 0);
 
       save();
       renderRecipes();
     }
 
     const examples = [
-      ["香蕉燕麦饼","早餐","鸡蛋",15,["香蕉","燕麦","鸡蛋"],["鸡蛋"],["快手","手指食物"],4,"小火煎熟，切成适合抓握的大小。"],
-      ["牛油果酸奶吐司","早餐","奶制品",8,["牛油果","酸奶","吐司"],["牛奶","小麦"],["快手"],4,"吐司切条，牛油果压泥。"],
-      ["番茄牛肉软饭","午餐","牛肉",25,["牛肉","番茄","米饭","西兰花"],[],["补铁","可冷冻"],5,"牛肉切碎，与番茄一起炖软。"],
-      ["鸡肉南瓜意面","午餐","鸡肉",25,["鸡肉","南瓜","意面"],["小麦"],["daycare","可冷冻"],4,"南瓜压成酱，鸡肉切碎。"],
-      ["豆腐蔬菜烩饭","午餐","豆类",20,["豆腐","米饭","胡萝卜","豌豆"],["大豆"],["快手"],4,"食材切小并煮软。"],
-      ["三文鱼土豆饼","晚餐","鱼",30,["三文鱼","土豆","豌豆"],["鱼"],["手指食物","可冷冻"],4,"煎或烤至熟透。"],
-      ["鸡肉西兰花面","晚餐","鸡肉",20,["鸡肉","西兰花","面条"],["小麦"],["快手"],5,"面条剪短，所有食材煮软。"],
-      ["猪肉白菜小馄饨","晚餐","猪肉",45,["猪肉","白菜","馄饨皮"],["小麦"],["可冷冻"],5,"一次多包一些冷冻。"],
-      ["酸奶蓝莓杯","加餐","奶制品",5,["酸奶","蓝莓"],["牛奶"],["快手"],4,"蓝莓按年龄处理。"],
-      ["香蕉花生酱吐司","加餐","豆类",5,["香蕉","花生酱","吐司"],["花生","小麦"],["快手"],4,"花生酱薄涂，避免过厚。"],
-      ["蒸红薯条","加餐","无",20,["红薯"],[],["手指食物"],5,"蒸至容易压碎。"],
-      ["梨子燕麦粥","早餐","无",15,["梨","燕麦"],[],["快手"],4,"梨切碎煮软。"]
+      ["香蕉燕麦饼",["早餐","下午茶"],"鸡蛋",15,["香蕉","燕麦","鸡蛋"],["鸡蛋"],["快手","手指食物"],4,"小火煎熟，切成适合抓握的大小。"],
+      ["牛油果酸奶吐司",["早餐","下午茶"],"奶制品",8,["牛油果","酸奶","吐司"],["牛奶","小麦"],["快手"],4,"吐司切条，牛油果压泥。"],
+      ["番茄牛肉软饭",["午餐","晚餐"],"牛肉",25,["牛肉","番茄","米饭","西兰花"],[],["补铁","可冷冻"],5,"牛肉切碎，与番茄一起炖软。"],
+      ["鸡肉南瓜意面",["午餐","晚餐"],"鸡肉",25,["鸡肉","南瓜","意面"],["小麦"],["daycare","可冷冻"],4,"南瓜压成酱，鸡肉切碎。"],
+      ["豆腐蔬菜烩饭",["午餐","晚餐"],"豆类",20,["豆腐","米饭","胡萝卜","豌豆"],["大豆"],["快手"],4,"食材切小并煮软。"],
+      ["三文鱼土豆饼",["午餐","晚餐"],"鱼",30,["三文鱼","土豆","豌豆"],["鱼"],["手指食物","可冷冻"],4,"煎或烤至熟透。"],
+      ["鸡肉西兰花面",["午餐","晚餐"],"鸡肉",20,["鸡肉","西兰花","面条"],["小麦"],["快手"],5,"面条剪短，所有食材煮软。"],
+      ["猪肉白菜小馄饨",["午餐","晚餐"],"猪肉",45,["猪肉","白菜","馄饨皮"],["小麦"],["可冷冻"],5,"一次多包一些冷冻。"],
+      ["酸奶蓝莓杯",["早餐","下午茶"],"奶制品",5,["酸奶","蓝莓"],["牛奶"],["快手"],4,"蓝莓按年龄处理。"],
+      ["香蕉花生酱吐司",["早餐","下午茶"],"豆类",5,["香蕉","花生酱","吐司"],["花生","小麦"],["快手"],4,"花生酱薄涂，避免过厚。"],
+      ["蒸红薯条",["下午茶"],"无",20,["红薯"],[],["手指食物"],5,"蒸至容易压碎。"],
+      ["梨子燕麦粥",["早餐","下午茶"],"无",15,["梨","燕麦"],[],["快手"],4,"梨切碎煮软。"]
     ];
 
     function seedRecipes() {
+      const confirmed = confirm("将添加一组常见宝宝餐，方便体验菜单生成。它们只会保存在你的浏览器里，并且可以随时删除。继续导入吗？");
+      if (!confirmed) return;
       const existingNames = new Set(state.recipes.map(r => r.name));
-      examples.forEach(([name, mealType, protein, cookTime, ingredients, allergens, tags, rating, notes]) => {
+      examples.forEach(([name, mealTypes, protein, cookTime, ingredients, allergens, tags, rating, notes]) => {
         if (!existingNames.has(name)) {
-          state.recipes.push({ id: uid(), name, mealType, protein, cookTime, ingredients, allergens, tags, rating, notes });
+          state.recipes.push({ id: uid(), name, mealTypes, protein, cookTime, ingredients, allergens, tags, rating, notes });
         }
       });
       save();
@@ -711,8 +789,8 @@
       reader.onload = () => {
         try {
           const parsed = JSON.parse(reader.result);
-          state.recipes = parsed.recipes || [];
-          state.week = parsed.week || {};
+          state.recipes = (parsed.recipes || []).map(normalizeRecipe);
+          state.week = migrateWeek(parsed.week || {});
           state.settings = { ...state.settings, ...(parsed.settings || {}) };
           save();
           hydrateSettings();
