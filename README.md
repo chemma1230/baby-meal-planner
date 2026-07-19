@@ -1,14 +1,9 @@
-# Baby Weekly Meal Planner V0.3
+# Baby Meal Planner V0.4
 
-A bilingual Chinese/English browser-based baby meal planner.
+A bilingual, browser-based weekly baby meal planner.
 
-## Features
-- Chinese / English interface switch
-- Seven-day desktop view
-- Landscape print layout
-- Multi-select meal types
-- Weekly meal generation and shopping list
-- Local browser storage
-- JSON import/export
-
-User-entered recipe names, ingredients, tags, and notes are not translated when the interface language changes.
+## V0.4 updates
+- Edit saved recipes
+- Add Unknown as a baby rating option
+- Keep bilingual interface and printable seven-day layout
+- Data remains stored locally in each user's browser

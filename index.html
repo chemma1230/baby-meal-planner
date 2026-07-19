@@ -423,9 +423,10 @@
           <label>
             <span data-i18n="rating">宝宝喜欢程度</span>
             <select id="rating">
+              <option value="0" selected data-i18n="ratingUnknown">未知</option>
               <option value="1">1</option>
               <option value="2">2</option>
-              <option value="3" selected>3</option>
+              <option value="3">3</option>
               <option value="4">4</option>
               <option value="5">5</option>
             </select>
@@ -437,6 +438,7 @@
         </div>
         <div class="toolbar" style="margin-top:14px">
           <button class="btn primary" id="saveRecipeBtn" data-i18n="saveRecipe">保存食谱</button>
+          <button class="btn" id="cancelEditBtn" type="button" data-i18n="cancelEdit" hidden>取消编辑</button>
           <button class="btn" id="seedBtn" data-i18n="seedRecipes">导入一组示例食谱</button>
         </div>
         <p class="helper-text" data-i18n="seedHelp">“示例食谱”是一组用于体验规划功能的常见宝宝餐。只会添加到你自己的浏览器里，也可以随时删除。</p>
@@ -474,14 +476,14 @@
         mealTypeHelp: "例如香蕉松饼可以同时用于早餐和下午茶。", protein: "主要蛋白质", cookTime: "烹饪时间（分钟）",
         ingredients: "食材，用逗号分隔", ingredientsPlaceholder: "牛肉, 番茄, 米饭, 西兰花", allergens: "过敏原，用逗号分隔",
         allergensPlaceholder: "鸡蛋, 牛奶, 小麦", tags: "标签，用逗号分隔", tagsPlaceholder: "快手, 可冷冻, daycare",
-        rating: "宝宝喜欢程度", notes: "做法与备注", notesPlaceholder: "切小块、蒸软、适合手指食物……",
-        saveRecipe: "保存食谱", seedRecipes: "导入一组示例食谱",
+        rating: "宝宝喜欢程度", ratingUnknown: "未知", notes: "做法与备注", notesPlaceholder: "切小块、蒸软、适合手指食物……",
+        saveRecipe: "保存食谱", updateRecipe: "更新食谱", cancelEdit: "取消编辑", edit: "编辑", seedRecipes: "导入一组示例食谱",
         seedHelp: "“示例食谱”是一组用于体验规划功能的常见宝宝餐。只会添加到你自己的浏览器里，也可以随时删除。",
         shoppingTitle: "本周购物清单", refreshShopping: "重新汇总", copyText: "复制文本",
         footerNote: "提示：清除浏览器数据可能会删除本地食谱。请偶尔使用“导出数据”备份。",
         proteinNone:"无", proteinEgg:"鸡蛋", proteinBeef:"牛肉", proteinChicken:"鸡肉", proteinPork:"猪肉", proteinFish:"鱼", proteinShrimp:"虾", proteinBeans:"豆类", proteinDairy:"奶制品",
         emptyMeal:"尚未安排", minutes:"分钟", reroll:"换一道", locked:"已锁定", lock:"锁定",
-        noRecipes:"还没有食谱。先添加几道，或者导入一组示例食谱体验一下。", liking:"喜欢程度", ingredientLabel:"食材", allergenLabel:"过敏原", notFilled:"未填写", none:"无", delete:"删除",
+        noRecipes:"还没有食谱。先添加几道，或者导入一组示例食谱体验一下。", liking:"喜欢程度", unknown:"未知", ingredientLabel:"食材", allergenLabel:"过敏原", notFilled:"未填写", none:"无", delete:"删除",
         addRecipeNameAlert:"请填写食谱名称。", chooseMealAlert:"请至少选择一个餐别。", addRecipesFirst:"请先添加食谱，或点击“导入一组示例食谱”。",
         confirmDelete:name=>`删除“${name}”？`, seedConfirm:"将添加一组常见宝宝餐，方便体验菜单生成。它们只会保存在你的浏览器里，并且可以随时删除。继续导入吗？",
         shoppingEmpty:"先生成一周菜单，购物清单才会冒出来。", importSuccess:"导入成功。", importFail:"无法读取这个备份文件。",
@@ -500,14 +502,14 @@
         mealTypeHelp: "For example, banana pancakes can work for both breakfast and an afternoon snack.", protein: "Main Protein", cookTime: "Cooking Time (minutes)",
         ingredients: "Ingredients, separated by commas", ingredientsPlaceholder: "beef, tomato, rice, broccoli", allergens: "Allergens, separated by commas",
         allergensPlaceholder: "egg, milk, wheat", tags: "Tags, separated by commas", tagsPlaceholder: "quick, freezer-friendly, daycare",
-        rating: "Baby's Rating", notes: "Instructions & Notes", notesPlaceholder: "Cut into small pieces, steam until soft, suitable for finger food…",
-        saveRecipe: "Save Recipe", seedRecipes: "Add Sample Recipes",
+        rating: "Baby's Rating", ratingUnknown: "Unknown", notes: "Instructions & Notes", notesPlaceholder: "Cut into small pieces, steam until soft, suitable for finger food…",
+        saveRecipe: "Save Recipe", updateRecipe: "Update Recipe", cancelEdit: "Cancel Editing", edit: "Edit", seedRecipes: "Add Sample Recipes",
         seedHelp: "Sample recipes are common baby meals provided so you can test the planner. They are stored only in your browser and can be deleted anytime.",
         shoppingTitle: "Weekly Shopping List", refreshShopping: "Refresh List", copyText: "Copy Text",
         footerNote: "Tip: Clearing browser data may erase local recipes. Export a backup occasionally.",
         proteinNone:"None", proteinEgg:"Egg", proteinBeef:"Beef", proteinChicken:"Chicken", proteinPork:"Pork", proteinFish:"Fish", proteinShrimp:"Shrimp", proteinBeans:"Beans", proteinDairy:"Dairy",
         emptyMeal:"Not planned", minutes:"min", reroll:"Swap", locked:"Locked", lock:"Lock",
-        noRecipes:"No recipes yet. Add a few recipes or load the sample set to try the planner.", liking:"Rating", ingredientLabel:"Ingredients", allergenLabel:"Allergens", notFilled:"Not entered", none:"None", delete:"Delete",
+        noRecipes:"No recipes yet. Add a few recipes or load the sample set to try the planner.", liking:"Rating", unknown:"Unknown", ingredientLabel:"Ingredients", allergenLabel:"Allergens", notFilled:"Not entered", none:"None", delete:"Delete",
         addRecipeNameAlert:"Please enter a recipe name.", chooseMealAlert:"Please select at least one meal type.", addRecipesFirst:"Please add recipes first, or click “Add Sample Recipes.”",
         confirmDelete:name=>`Delete “${name}”?`, seedConfirm:"This will add a set of common baby meals so you can test the planner. They will be stored only in your browser and can be deleted anytime. Continue?",
         shoppingEmpty:"Generate a weekly plan first to build your shopping list.", importSuccess:"Import complete.", importFail:"This backup file could not be read.",
@@ -532,6 +534,7 @@
       document.querySelectorAll("[data-i18n-placeholder]").forEach(el => el.placeholder = t(el.dataset.i18nPlaceholder));
       document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
       document.querySelector("#languageBtn").textContent = currentLanguage === "zh" ? "English" : "中文";
+      document.querySelector("#saveRecipeBtn").textContent = editingRecipeId ? t("updateRecipe") : t("saveRecipe");
       localStorage.setItem("babyMealPlannerLanguage", currentLanguage);
       renderAll();
     }
@@ -552,6 +555,8 @@
       }
     };
 
+    let editingRecipeId = null;
+
     function uid() {
       return crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
     }
@@ -561,7 +566,8 @@
         ? recipe.mealTypes
         : [recipe.mealType || "早餐"];
       const mealTypes = [...new Set(rawMealTypes.map(type => type === "加餐" ? "下午茶" : type))];
-      return { ...recipe, mealTypes };
+      const rating = Number.isFinite(Number(recipe.rating)) ? Number(recipe.rating) : 0;
+      return { ...recipe, mealTypes, rating };
     }
 
     function migrateWeek(week) {
@@ -615,7 +621,7 @@
     }
 
     function scoreRecipe(recipe, recentIds, previousProtein) {
-      let score = Number(recipe.rating || 3) * 2;
+      let score = (Number(recipe.rating) > 0 ? Number(recipe.rating) : 3) * 2;
       if (!recentIds.includes(recipe.id)) score += 4;
       if (recipe.protein && recipe.protein !== previousProtein) score += 2;
       if (recipe.tags.some(t => /快手|可冷冻|daycare/i.test(t))) score += 1;
@@ -774,13 +780,17 @@
         card.innerHTML = `
           <h3>${recipe.name}</h3>
           <div class="chips">${chips}</div>
-          <div class="meta">${recipe.cookTime} ${t("minutes")} · ${t("liking")} ${"★".repeat(recipe.rating)}${"☆".repeat(5 - recipe.rating)}</div>
+          <div class="meta">${recipe.cookTime} ${t("minutes")} · ${t("liking")} ${recipe.rating > 0 ? `${"★".repeat(recipe.rating)}${"☆".repeat(5 - recipe.rating)}` : t("unknown")}</div>
           <div class="meta">${t("ingredientLabel")}: ${recipe.ingredients.join(currentLanguage === "zh" ? "、" : ", ") || t("notFilled")}</div>
           <div class="meta">${t("allergenLabel")}: ${recipe.allergens.join(currentLanguage === "zh" ? "、" : ", ") || t("none")}</div>
           <p>${recipe.notes || ""}</p>
         `;
         const actions = document.createElement("div");
         actions.className = "card-actions";
+        const edit = document.createElement("button");
+        edit.className = "btn small";
+        edit.textContent = t("edit");
+        edit.addEventListener("click", () => startEditingRecipe(recipe.id));
         const del = document.createElement("button");
         del.className = "btn small danger";
         del.textContent = t("delete");
@@ -797,13 +807,13 @@
           renderWeek();
           renderShopping();
         });
-        actions.appendChild(del);
+        actions.append(edit, del);
         card.appendChild(actions);
         root.appendChild(card);
       });
     }
 
-    function addRecipe() {
+    function saveRecipeFromForm() {
       const name = document.querySelector("#recipeName").value.trim();
       if (!name) {
         alert(t("addRecipeNameAlert"));
@@ -816,8 +826,7 @@
         return;
       }
 
-      state.recipes.push({
-        id: uid(),
+      const recipeData = {
         name,
         mealTypes,
         protein: document.querySelector("#protein").value,
@@ -827,15 +836,51 @@
         tags: splitList(document.querySelector("#tags").value),
         rating: Number(document.querySelector("#rating").value),
         notes: document.querySelector("#notes").value.trim()
-      });
+      };
 
-      ["recipeName","ingredients","allergens","tags","notes"].forEach(id => document.querySelector(`#${id}`).value = "");
-      document.querySelector("#cookTime").value = 20;
-      document.querySelector("#rating").value = 3;
-      document.querySelectorAll('input[name="mealType"]').forEach((input, index) => input.checked = index === 0);
+      if (editingRecipeId) {
+        const index = state.recipes.findIndex(recipe => recipe.id === editingRecipeId);
+        if (index !== -1) state.recipes[index] = { ...state.recipes[index], ...recipeData };
+      } else {
+        state.recipes.push({ id: uid(), ...recipeData });
+      }
 
+      resetRecipeForm();
       save();
       renderRecipes();
+      renderWeek();
+      renderShopping();
+    }
+
+    function resetRecipeForm() {
+      editingRecipeId = null;
+      ["recipeName","ingredients","allergens","tags","notes"].forEach(id => document.querySelector(`#${id}`).value = "");
+      document.querySelector("#protein").value = "无";
+      document.querySelector("#cookTime").value = 20;
+      document.querySelector("#rating").value = 0;
+      document.querySelectorAll('input[name="mealType"]').forEach((input, index) => input.checked = index === 0);
+      document.querySelector("#saveRecipeBtn").textContent = t("saveRecipe");
+      document.querySelector("#cancelEditBtn").hidden = true;
+    }
+
+    function startEditingRecipe(recipeId) {
+      const recipe = state.recipes.find(item => item.id === recipeId);
+      if (!recipe) return;
+      editingRecipeId = recipeId;
+      document.querySelector("#recipeName").value = recipe.name || "";
+      document.querySelector("#protein").value = recipe.protein || "无";
+      document.querySelector("#cookTime").value = recipe.cookTime ?? 0;
+      document.querySelector("#ingredients").value = (recipe.ingredients || []).join(", ");
+      document.querySelector("#allergens").value = (recipe.allergens || []).join(", ");
+      document.querySelector("#tags").value = (recipe.tags || []).join(", ");
+      document.querySelector("#rating").value = Number(recipe.rating) || 0;
+      document.querySelector("#notes").value = recipe.notes || "";
+      document.querySelectorAll('input[name="mealType"]').forEach(input => {
+        input.checked = recipe.mealTypes.includes(input.value);
+      });
+      document.querySelector("#saveRecipeBtn").textContent = t("updateRecipe");
+      document.querySelector("#cancelEditBtn").hidden = false;
+      document.querySelector("#recipes .panel").scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     const examples = [
@@ -948,7 +993,8 @@
       });
     });
 
-    document.querySelector("#saveRecipeBtn").addEventListener("click", addRecipe);
+    document.querySelector("#saveRecipeBtn").addEventListener("click", saveRecipeFromForm);
+    document.querySelector("#cancelEditBtn").addEventListener("click", resetRecipeForm);
     document.querySelector("#seedBtn").addEventListener("click", seedRecipes);
     document.querySelector("#generateBtn").addEventListener("click", () => { syncSettings(); generateWeek(); });
     document.querySelector("#clearWeekBtn").addEventListener("click", () => {
