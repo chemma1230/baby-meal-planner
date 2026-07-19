@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f7efe6" />
+  <title>宝宝每周食谱规划器</title>
+  <style>
+    :root {
+      --bg: #fbf7f2;
+      --panel: #ffffff;
+      --text: #2f2a26;
+      --muted: #746b64;
+      --line: #eadfd3;
+      --accent: #bd7755;
+      --accent-soft: #f4e3d8;
+      --good: #4f7d65;
+      --danger: #a75050;
+      --shadow: 0 10px 30px rgba(74, 54, 39, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-rounded, "SF Pro Rounded", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      padding: 24px 16px 60px;
+    }
+
+    header {
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 6px; font-size: clamp(28px, 5vw, 44px); }
+    h2 { margin-bottom: 14px; }
+    .subtitle { margin: 0; color: var(--muted); }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 14px;
+      background: var(--panel);
+      color: var(--text);
+      transition: transform .15s ease, border-color .15s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+    .btn.primary { background: var(--accent); color: white; border-color: var(--accent); }
+    .btn.soft { background: var(--accent-soft); border-color: transparent; }
+    .btn.danger { color: var(--danger); }
+    .btn.small { padding: 6px 10px; border-radius: 10px; font-size: 13px; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .tab {
+      white-space: nowrap;
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 16px;
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .tab.active { background: var(--accent-soft); color: var(--text); }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .form-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    label { display: grid; gap: 7px; font-size: 14px; color: var(--muted); }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      color: var(--text);
+      padding: 11px 12px;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+    textarea { min-height: 92px; resize: vertical; }
+    .span-2 { grid-column: 1 / -1; }
+
+    .recipe-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .recipe-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px;
+      background: #fffdfb;
+    }
+
+    .recipe-card h3 { margin-bottom: 8px; }
+    .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0 12px; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: var(--accent-soft);
+    }
+    .meta { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+    .card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(170px, 1fr));
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .day {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+      background: #fffdfb;
+      min-height: 470px;
+    }
+
+    .day h3 { margin-bottom: 10px; }
+    .meal {
+      border-top: 1px dashed var(--line);
+      padding: 11px 0;
+    }
+    .meal:first-of-type { border-top: 0; }
+    .meal-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .meal-name { min-height: 42px; font-weight: 600; }
+    .meal-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .locked { color: var(--good); }
+
+    .settings-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 16px;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 28px 10px;
+      border: 1px dashed var(--line);
+      border-radius: 16px;
+    }
+
+    .shopping {
+      columns: 2;
+      column-gap: 28px;
+      padding-left: 20px;
+    }
+
+    .notice {
+      border-left: 4px solid var(--accent);
+      background: var(--accent-soft);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    .footer-note { color: var(--muted); font-size: 13px; margin-top: 18px; }
+
+    @media (max-width: 900px) {
+      .recipe-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .settings-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .form-grid, .settings-grid, .recipe-list { grid-template-columns: 1fr; }
+      .span-2 { grid-column: auto; }
+      .shopping { columns: 1; }
+      .app { padding-top: 16px; }
+      header { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div>
+        <h1>宝宝每周食谱规划器 🥣</h1>
+        <p class="subtitle">把“今天吃什么”交给规则，不交给厨房骰子。</p>
+      </div>
+      <div class="toolbar">
+        <button class="btn" id="exportBtn">导出数据</button>
+        <label class="btn" for="importInput">导入数据</label>
+        <input id="importInput" type="file" accept="application/json" hidden />
+      </div>
+    </header>
+
+    <nav class="tabs" aria-label="功能导航">
+      <button class="tab active" data-view="planner">本周菜单</button>
+      <button class="tab" data-view="recipes">食谱库</button>
+      <button class="tab" data-view="shopping">购物清单</button>
+    </nav>
+
+    <section class="view active" id="planner">
+      <div class="notice">
+        第一版数据保存在当前浏览器。朋友打开链接后，会拥有自己的独立食谱库。
+      </div>
+
+      <div class="panel">
+        <div class="grid settings-grid">
+          <label>
+            工作日最长烹饪时间
+            <select id="weekdayMax">
+              <option value="15">15 分钟</option>
+              <option value="30" selected>30 分钟</option>
+              <option value="45">45 分钟</option>
+              <option value="999">不限</option>
+            </select>
+          </label>
+          <label>
+            每周鱼类目标
+            <select id="fishTarget">
+              <option value="0">不限制</option>
+              <option value="1" selected>至少 1 次</option>
+              <option value="2">至少 2 次</option>
+            </select>
+          </label>
+          <label>
+            每周豆类目标
+            <select id="beanTarget">
+              <option value="0">不限制</option>
+              <option value="1" selected>至少 1 次</option>
+              <option value="2">至少 2 次</option>
+            </select>
+          </label>
+          <label>
+            排除过敏原
+            <input id="excludedAllergens" placeholder="如：鸡蛋, 牛奶" />
+          </label>
+        </div>
+
+        <div class="toolbar" style="margin-bottom:16px">
+          <button class="btn primary" id="generateBtn">生成一周菜单</button>
+          <button class="btn soft" id="clearWeekBtn">清空菜单</button>
+        </div>
+
+        <div id="weekGrid" class="week-grid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="view" id="recipes">
+      <div class="panel">
+        <h2>添加食谱</h2>
+        <div class="grid form-grid">
+          <label>
+            食谱名称
+            <input id="recipeName" placeholder="番茄牛肉软饭" />
+          </label>
+          <label>
+            餐别
+            <select id="mealType">
+              <option value="早餐">早餐</option>
+              <option value="午餐">午餐</option>
+              <option value="晚餐">晚餐</option>
+              <option value="加餐">加餐</option>
+            </select>
+          </label>
+          <label>
+            主要蛋白质
+            <select id="protein">
+              <option value="无">无</option>
+              <option value="鸡蛋">鸡蛋</option>
+              <option value="牛肉">牛肉</option>
+              <option value="鸡肉">鸡肉</option>
+              <option value="猪肉">猪肉</option>
+              <option value="鱼">鱼</option>
+              <option value="虾">虾</option>
+              <option value="豆类">豆类</option>
+              <option value="奶制品">奶制品</option>
+            </select>
+          </label>
+          <label>
+            烹饪时间（分钟）
+            <input id="cookTime" type="number" min="0" value="20" />
+          </label>
+          <label>
+            食材，用逗号分隔
+            <input id="ingredients" placeholder="牛肉, 番茄, 米饭, 西兰花" />
+          </label>
+          <label>
+            过敏原，用逗号分隔
+            <input id="allergens" placeholder="鸡蛋, 牛奶, 小麦" />
+          </label>
+          <label>
+            标签，用逗号分隔
+            <input id="tags" placeholder="快手, 可冷冻, daycare" />
+          </label>
+          <label>
+            宝宝喜欢程度
+            <select id="rating">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3" selected>3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </label>
+          <label class="span-2">
+            做法与备注
+            <textarea id="notes" placeholder="切小块、蒸软、适合手指食物……"></textarea>
+          </label>
+        </div>
+        <div class="toolbar" style="margin-top:14px">
+          <button class="btn primary" id="saveRecipeBtn">保存食谱</button>
+          <button class="btn" id="seedBtn">加入示例食谱</button>
+        </div>
+      </div>
+
+      <div id="recipeList" class="recipe-list"></div>
+    </section>
+
+    <section class="view" id="shopping">
+      <div class="panel">
+        <h2>本周购物清单</h2>
+        <div class="toolbar" style="margin-bottom:14px">
+          <button class="btn primary" id="refreshShoppingBtn">重新汇总</button>
+          <button class="btn" id="copyShoppingBtn">复制文本</button>
+        </div>
+        <div id="shoppingContent"></div>
+      </div>
+    </section>
+
+    <p class="footer-note">提示：清除浏览器数据可能会删除本地食谱。请偶尔使用“导出数据”备份。</p>
+  </main>
+
+  <script>
+    const DAYS = ["周一","周二","周三","周四","周五","周六","周日"];
+    const MEALS = ["早餐","午餐","晚餐","加餐"];
+    const STORAGE_KEY = "babyMealPlannerV1";
+
+    const state = {
+      recipes: [],
+      week: {},
+      settings: {
+        weekdayMax: 30,
+        fishTarget: 1,
+        beanTarget: 1,
+        excludedAllergens: ""
+      }
+    };
+
+    function uid() {
+      return crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random());
+    }
+
+    function load() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        state.recipes = parsed.recipes || [];
+        state.week = parsed.week || {};
+        state.settings = { ...state.settings, ...(parsed.settings || {}) };
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function splitList(value) {
+      return value.split(/[,，]/).map(v => v.trim()).filter(Boolean);
+    }
+
+    function normalize(value) {
+      return value.trim().toLowerCase();
+    }
+
+    function getExcluded() {
+      return splitList(document.querySelector("#excludedAllergens").value).map(normalize);
+    }
+
+    function recipeAllowed(recipe, dayIndex) {
+      const excluded = getExcluded();
+      const hasBlocked = recipe.allergens.some(a => excluded.includes(normalize(a)));
+      if (hasBlocked) return false;
+      if (dayIndex < 5 && Number(recipe.cookTime) > Number(state.settings.weekdayMax)) return false;
+      return true;
+    }
+
+    function scoreRecipe(recipe, recentIds, previousProtein) {
+      let score = Number(recipe.rating || 3) * 2;
+      if (!recentIds.includes(recipe.id)) score += 4;
+      if (recipe.protein && recipe.protein !== previousProtein) score += 2;
+      if (recipe.tags.some(t => /快手|可冷冻|daycare/i.test(t))) score += 1;
+      score += Math.random() * 3;
+      return score;
+    }
+
+    function chooseRecipe(mealType, dayIndex, usedIds, previousProtein) {
+      const candidates = state.recipes
+        .filter(r => r.mealType === mealType && recipeAllowed(r, dayIndex))
+        .sort((a, b) => scoreRecipe(b, usedIds, previousProtein) - scoreRecipe(a, usedIds, previousProtein));
+
+      const fresh = candidates.filter(r => !usedIds.includes(r.id));
+      const pool = fresh.length ? fresh : candidates;
+      return pool.length ? pool[Math.floor(Math.random() * Math.min(pool.length, 3))] : null;
+    }
+
+    function ensureNutritionTargets() {
+      const dinnerSlots = DAYS.map(day => ({ day, meal: "晚餐", ...state.week[day]?.["晚餐"] }));
+      const replaceForProtein = (protein, target) => {
+        let current = dinnerSlots.filter(s => state.recipes.find(r => r.id === s.recipeId)?.protein === protein).length;
+        if (current >= target) return;
+
+        const options = state.recipes.filter(r => r.mealType === "晚餐" && r.protein === protein);
+        for (const option of options) {
+          if (current >= target) break;
+          const slot = dinnerSlots.find(s => !s.locked && state.recipes.find(r => r.id === s.recipeId)?.protein !== protein);
+          if (!slot) break;
+          state.week[slot.day]["晚餐"].recipeId = option.id;
+          current++;
+        }
+      };
+      replaceForProtein("鱼", Number(state.settings.fishTarget));
+      replaceForProtein("豆类", Number(state.settings.beanTarget));
+    }
+
+    function generateWeek() {
+      if (!state.recipes.length) {
+        alert("请先添加食谱，或点击“加入示例食谱”。");
+        return;
+      }
+
+      const usedIds = [];
+      let previousProtein = "";
+
+      DAYS.forEach((day, dayIndex) => {
+        state.week[day] = state.week[day] || {};
+        MEALS.forEach(meal => {
+          const existing = state.week[day][meal];
+          if (existing?.locked && existing.recipeId) {
+            usedIds.push(existing.recipeId);
+            return;
+          }
+          const selected = chooseRecipe(meal, dayIndex, usedIds, previousProtein);
+          state.week[day][meal] = {
+            recipeId: selected?.id || null,
+            locked: false
+          };
+          if (selected) {
+            usedIds.push(selected.id);
+            previousProtein = selected.protein;
+          }
+        });
+      });
+
+      ensureNutritionTargets();
+      save();
+      renderWeek();
+      renderShopping();
+    }
+
+    function rerollMeal(day, meal) {
+      const dayIndex = DAYS.indexOf(day);
+      const usedIds = Object.values(state.week).flatMap(dayObj =>
+        Object.values(dayObj).map(slot => slot.recipeId).filter(Boolean)
+      );
+      const current = state.week[day][meal];
+      const selected = chooseRecipe(meal, dayIndex, usedIds, "");
+      if (selected) {
+        current.recipeId = selected.id;
+        current.locked = false;
+        save();
+        renderWeek();
+        renderShopping();
+      }
+    }
+
+    function toggleLock(day, meal) {
+      const slot = state.week[day][meal];
+      slot.locked = !slot.locked;
+      save();
+      renderWeek();
+    }
+
+    function renderWeek() {
+      const root = document.querySelector("#weekGrid");
+      root.innerHTML = "";
+
+      DAYS.forEach(day => {
+        const dayEl = document.createElement("article");
+        dayEl.className = "day";
+        const title = document.createElement("h3");
+        title.textContent = day;
+        dayEl.appendChild(title);
+
+        MEALS.forEach(meal => {
+          const slot = state.week[day]?.[meal];
+          const recipe = state.recipes.find(r => r.id === slot?.recipeId);
+
+          const mealEl = document.createElement("div");
+          mealEl.className = "meal";
+          mealEl.innerHTML = `
+            <div class="meal-label">${meal}</div>
+            <div class="meal-name">${recipe ? recipe.name : "尚未安排"}</div>
+            ${recipe ? `<div class="meta">${recipe.protein} · ${recipe.cookTime} 分钟</div>` : ""}
+          `;
+
+          const actions = document.createElement("div");
+          actions.className = "meal-actions";
+
+          const reroll = document.createElement("button");
+          reroll.className = "btn small";
+          reroll.textContent = "换一道";
+          reroll.disabled = !recipe || slot?.locked;
+          reroll.addEventListener("click", () => rerollMeal(day, meal));
+
+          const lock = document.createElement("button");
+          lock.className = "btn small";
+          lock.textContent = slot?.locked ? "已锁定" : "锁定";
+          if (slot?.locked) lock.classList.add("locked");
+          lock.disabled = !recipe;
+          lock.addEventListener("click", () => toggleLock(day, meal));
+
+          actions.append(reroll, lock);
+          mealEl.appendChild(actions);
+          dayEl.appendChild(mealEl);
+        });
+
+        root.appendChild(dayEl);
+      });
+    }
+
+    function renderRecipes() {
+      const root = document.querySelector("#recipeList");
+      root.innerHTML = "";
+
+      if (!state.recipes.length) {
+        root.innerHTML = '<div class="empty" style="grid-column:1/-1">还没有食谱。先加几道，或者加入示例食谱。</div>';
+        return;
+      }
+
+      state.recipes.forEach(recipe => {
+        const card = document.createElement("article");
+        card.className = "recipe-card";
+        const chips = [recipe.mealType, recipe.protein, ...recipe.tags].map(x => `<span class="chip">${x}</span>`).join("");
+        card.innerHTML = `
+          <h3>${recipe.name}</h3>
+          <div class="chips">${chips}</div>
+          <div class="meta">${recipe.cookTime} 分钟 · 喜欢程度 ${"★".repeat(recipe.rating)}${"☆".repeat(5 - recipe.rating)}</div>
+          <div class="meta">食材：${recipe.ingredients.join("、") || "未填写"}</div>
+          <div class="meta">过敏原：${recipe.allergens.join("、") || "无"}</div>
+          <p>${recipe.notes || ""}</p>
+        `;
+        const actions = document.createElement("div");
+        actions.className = "card-actions";
+        const del = document.createElement("button");
+        del.className = "btn small danger";
+        del.textContent = "删除";
+        del.addEventListener("click", () => {
+          if (!confirm(`删除“${recipe.name}”？`)) return;
+          state.recipes = state.recipes.filter(r => r.id !== recipe.id);
+          Object.values(state.week).forEach(dayObj => {
+            Object.values(dayObj).forEach(slot => {
+              if (slot.recipeId === recipe.id) slot.recipeId = null;
+            });
+          });
+          save();
+          renderRecipes();
+          renderWeek();
+          renderShopping();
+        });
+        actions.appendChild(del);
+        card.appendChild(actions);
+        root.appendChild(card);
+      });
+    }
+
+    function addRecipe() {
+      const name = document.querySelector("#recipeName").value.trim();
+      if (!name) {
+        alert("请填写食谱名称。");
+        return;
+      }
+
+      state.recipes.push({
+        id: uid(),
+        name,
+        mealType: document.querySelector("#mealType").value,
+        protein: document.querySelector("#protein").value,
+        cookTime: Number(document.querySelector("#cookTime").value || 0),
+        ingredients: splitList(document.querySelector("#ingredients").value),
+        allergens: splitList(document.querySelector("#allergens").value),
+        tags: splitList(document.querySelector("#tags").value),
+        rating: Number(document.querySelector("#rating").value),
+        notes: document.querySelector("#notes").value.trim()
+      });
+
+      ["recipeName","ingredients","allergens","tags","notes"].forEach(id => document.querySelector(`#${id}`).value = "");
+      document.querySelector("#cookTime").value = 20;
+      document.querySelector("#rating").value = 3;
+
+      save();
+      renderRecipes();
+    }
+
+    const examples = [
+      ["香蕉燕麦饼","早餐","鸡蛋",15,["香蕉","燕麦","鸡蛋"],["鸡蛋"],["快手","手指食物"],4,"小火煎熟，切成适合抓握的大小。"],
+      ["牛油果酸奶吐司","早餐","奶制品",8,["牛油果","酸奶","吐司"],["牛奶","小麦"],["快手"],4,"吐司切条，牛油果压泥。"],
+      ["番茄牛肉软饭","午餐","牛肉",25,["牛肉","番茄","米饭","西兰花"],[],["补铁","可冷冻"],5,"牛肉切碎，与番茄一起炖软。"],
+      ["鸡肉南瓜意面","午餐","鸡肉",25,["鸡肉","南瓜","意面"],["小麦"],["daycare","可冷冻"],4,"南瓜压成酱，鸡肉切碎。"],
+      ["豆腐蔬菜烩饭","午餐","豆类",20,["豆腐","米饭","胡萝卜","豌豆"],["大豆"],["快手"],4,"食材切小并煮软。"],
+      ["三文鱼土豆饼","晚餐","鱼",30,["三文鱼","土豆","豌豆"],["鱼"],["手指食物","可冷冻"],4,"煎或烤至熟透。"],
+      ["鸡肉西兰花面","晚餐","鸡肉",20,["鸡肉","西兰花","面条"],["小麦"],["快手"],5,"面条剪短，所有食材煮软。"],
+      ["猪肉白菜小馄饨","晚餐","猪肉",45,["猪肉","白菜","馄饨皮"],["小麦"],["可冷冻"],5,"一次多包一些冷冻。"],
+      ["酸奶蓝莓杯","加餐","奶制品",5,["酸奶","蓝莓"],["牛奶"],["快手"],4,"蓝莓按年龄处理。"],
+      ["香蕉花生酱吐司","加餐","豆类",5,["香蕉","花生酱","吐司"],["花生","小麦"],["快手"],4,"花生酱薄涂，避免过厚。"],
+      ["蒸红薯条","加餐","无",20,["红薯"],[],["手指食物"],5,"蒸至容易压碎。"],
+      ["梨子燕麦粥","早餐","无",15,["梨","燕麦"],[],["快手"],4,"梨切碎煮软。"]
+    ];
+
+    function seedRecipes() {
+      const existingNames = new Set(state.recipes.map(r => r.name));
+      examples.forEach(([name, mealType, protein, cookTime, ingredients, allergens, tags, rating, notes]) => {
+        if (!existingNames.has(name)) {
+          state.recipes.push({ id: uid(), name, mealType, protein, cookTime, ingredients, allergens, tags, rating, notes });
+        }
+      });
+      save();
+      renderRecipes();
+    }
+
+    function renderShopping() {
+      const root = document.querySelector("#shoppingContent");
+      const counts = new Map();
+
+      Object.values(state.week).forEach(dayObj => {
+        Object.values(dayObj).forEach(slot => {
+          const recipe = state.recipes.find(r => r.id === slot.recipeId);
+          if (!recipe) return;
+          recipe.ingredients.forEach(item => {
+            counts.set(item, (counts.get(item) || 0) + 1);
+          });
+        });
+      });
+
+      if (!counts.size) {
+        root.innerHTML = '<div class="empty">先生成一周菜单，购物清单才会冒出来。</div>';
+        return;
+      }
+
+      const sorted = [...counts.entries()].sort((a,b) => a[0].localeCompare(b[0], "zh-CN"));
+      root.innerHTML = `<ul class="shopping">${sorted.map(([name, count]) => `<li>${name}${count > 1 ? ` × ${count}` : ""}</li>`).join("")}</ul>`;
+    }
+
+    function exportData() {
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "baby-meal-planner-backup.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          state.recipes = parsed.recipes || [];
+          state.week = parsed.week || {};
+          state.settings = { ...state.settings, ...(parsed.settings || {}) };
+          save();
+          hydrateSettings();
+          renderAll();
+          alert("导入成功。");
+        } catch {
+          alert("无法读取这个备份文件。");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function hydrateSettings() {
+      document.querySelector("#weekdayMax").value = state.settings.weekdayMax;
+      document.querySelector("#fishTarget").value = state.settings.fishTarget;
+      document.querySelector("#beanTarget").value = state.settings.beanTarget;
+      document.querySelector("#excludedAllergens").value = state.settings.excludedAllergens || "";
+    }
+
+    function syncSettings() {
+      state.settings.weekdayMax = Number(document.querySelector("#weekdayMax").value);
+      state.settings.fishTarget = Number(document.querySelector("#fishTarget").value);
+      state.settings.beanTarget = Number(document.querySelector("#beanTarget").value);
+      state.settings.excludedAllergens = document.querySelector("#excludedAllergens").value;
+      save();
+    }
+
+    function renderAll() {
+      renderRecipes();
+      renderWeek();
+      renderShopping();
+    }
+
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+        tab.classList.add("active");
+        document.querySelector(`#${tab.dataset.view}`).classList.add("active");
+      });
+    });
+
+    document.querySelector("#saveRecipeBtn").addEventListener("click", addRecipe);
+    document.querySelector("#seedBtn").addEventListener("click", seedRecipes);
+    document.querySelector("#generateBtn").addEventListener("click", () => { syncSettings(); generateWeek(); });
+    document.querySelector("#clearWeekBtn").addEventListener("click", () => {
+      if (!confirm("清空本周菜单？")) return;
+      state.week = {};
+      save();
+      renderWeek();
+      renderShopping();
+    });
+    document.querySelector("#refreshShoppingBtn").addEventListener("click", renderShopping);
+    document.querySelector("#copyShoppingBtn").addEventListener("click", async () => {
+      const items = [...document.querySelectorAll("#shoppingContent li")].map(li => `• ${li.textContent}`).join("\n");
+      if (!items) return;
+      try {
+        await navigator.clipboard.writeText(items);
+        alert("已复制购物清单。");
+      } catch {
+        alert("当前浏览器不允许自动复制，请手动选择文字。");
+      }
+    });
+
+    document.querySelector("#exportBtn").addEventListener("click", exportData);
+    document.querySelector("#importInput").addEventListener("change", e => {
+      const file = e.target.files[0];
+      if (file) importData(file);
+      e.target.value = "";
+    });
+
+    ["weekdayMax","fishTarget","beanTarget","excludedAllergens"].forEach(id => {
+      document.querySelector(`#${id}`).addEventListener("change", syncSettings);
+    });
+
+    load();
+    hydrateSettings();
+    renderAll();
+  </script>
+</body>
+</html>
