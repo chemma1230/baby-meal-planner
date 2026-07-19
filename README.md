@@ -1,19 +1,14 @@
-# 宝宝每周食谱规划器 V0.2
+# Baby Weekly Meal Planner V0.3
 
-一个无需登录、数据保存在浏览器本地的宝宝每周食谱与购物清单工具。
+A bilingual Chinese/English browser-based baby meal planner.
 
-## V0.2 更新
+## Features
+- Chinese / English interface switch
+- Seven-day desktop view
+- Landscape print layout
+- Multi-select meal types
+- Weekly meal generation and shopping list
+- Local browser storage
+- JSON import/export
 
-- 餐别支持多选
-- “加餐”改为“下午茶”
-- 更新为灰蓝、雾蓝和鼠尾草绿为主的冷色系
-- 更清楚地解释“示例食谱”的用途
-- 自动兼容 V0.1 在同一浏览器中保存的食谱和菜单
-
-## 发布到 GitHub Pages
-
-将 `index.html` 和本文件上传到 GitHub 仓库根目录，然后在 Settings → Pages 中选择从 `main` 分支的 `/ (root)` 发布。
-
-## 数据说明
-
-所有食谱和菜单默认存储在当前浏览器的 localStorage 中。不同设备和浏览器之间不会自动同步，请使用页面顶部的“导出数据”进行备份。
+User-entered recipe names, ingredients, tags, and notes are not translated when the interface language changes.
